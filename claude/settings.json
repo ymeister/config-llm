@@ -32,6 +32,5 @@
   "verbose": true,
   "preferredNotifChannel": "notifications_disabled",
   "autoCompactEnabled": false,
-  "remoteControlAtStartup": false,
-  "model": "claude-fable-5[1m]"
+  "remoteControlAtStartup": false
 }
