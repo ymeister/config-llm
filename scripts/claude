@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+# Run Claude Code in a bubblewrap sandbox. The sandbox shows only the current
+# directory. It mounts the system paths read-only. It mounts $PWD read-write.
+
+set -euo pipefail
+
+if ! command -v bwrap &>/dev/null; then
+    echo "Error: bubblewrap (bwrap) is not installed." >&2
+    exit 1
+fi
+
+if ! command -v claude &>/dev/null; then
+    echo "Error: claude is not in PATH." >&2
+    exit 1
+fi
+
+CLAUDE_BIN="$(readlink -f "$(PATH=${PATH/"$(dirname $0):"/} command -v claude)")"
+CLAUDE_DIR="$HOME/.local/share/Claude"
+CLAUDE_JSON="$CLAUDE_DIR/.claude.json"
+
+WORK_DIR="$(readlink -f .)"
+
+args=()
+
+# --- Namespace isolation ---
+args+=(--unshare-all --share-net --die-with-parent)
+
+# --- System directories (read-only) ---
+# Bind these two read-only. Skip a directory that does not exist.
+for dir in /usr /etc; do
+    [[ -d "$dir" ]] && args+=(--ro-bind "$dir" "$dir")
+done
+
+# On some systems, /bin, /sbin, /lib, and /lib64 are real directories. On other
+# systems, they are symlinks into /usr. This loop makes a read-only bind for the
+# first case and a symlink for the second case.
+for dir in /bin /sbin /lib /lib64; do
+    if [[ -L "$dir" ]]; then
+        args+=(--symlink "$(readlink "$dir")" "$dir")
+    elif [[ -d "$dir" ]]; then
+        args+=(--ro-bind "$dir" "$dir")
+    fi
+done
+
+# --- Nix (read-only) ---
+[[ -d /nix ]] && args+=(--ro-bind /nix /nix)
+
+# --- Virtual filesystems ---
+args+=(--proc /proc --dev /dev --tmpfs /tmp --tmpfs /run)
+
+# --- NixOS system profile ---
+# The --tmpfs /run option above hides /run/current-system. This bind puts it
+# back.
+[[ -d /run/current-system ]] && args+=(--ro-bind /run/current-system /run/current-system)
+
+# --- XDG runtime directory ---
+args+=(--dir "/run/user/$(id -u)")
+
+# --- Home directory ---
+# HOME is an empty tmpfs. The sandbox can write to it. Nothing in it survives
+# the exit. This script binds only the .claude directory, read-write. The other
+# contents of $CLAUDE_DIR stay outside the sandbox: .cache, .config, .local,
+# and .npm.
+args+=(--tmpfs "$CLAUDE_DIR")
+args+=(--bind "$CLAUDE_DIR/.claude" "$CLAUDE_DIR/.claude")
+
+# This script copies .claude.json. It does not bind it. bwrap reads the host
+# copy through file descriptor 9. bwrap then writes a real file on the tmpfs. A
+# save that replaces the file by rename then works. The host copy cannot change.
+# The sandbox loses every write at exit.
+if [[ -f "$CLAUDE_JSON" ]]; then
+    exec 9<"$CLAUDE_JSON"
+    args+=(--perms 0600 --file 9 "$CLAUDE_JSON")
+fi
+
+# --- Working directory (read-write) ---
+args+=(--bind "$WORK_DIR" "$WORK_DIR")
+args+=(--chdir "$WORK_DIR")
+
+# --- Git worktree support ---
+# In a worktree or a submodule, $WORK_DIR/.git is a file, not a directory. The
+# file holds one line: "gitdir: <path>". The path points at the real gitdir.
+# That gitdir lives under the main repo, outside $WORK_DIR. git writes an
+# absolute path by default. git writes a relative path only with
+# extensions.worktreeConfig or --relative-paths.
+# The shared common directory holds objects, refs, and config. The code below
+# binds the gitdir and the common directory, so git works in the sandbox. It
+# then puts a tmpfs on the common directory's worktrees/, so the sandbox cannot
+# reach a sibling worktree.
+if [[ -f "$WORK_DIR/.git" ]]; then
+    GIT_DIR="$(sed -n 's/^gitdir: //p' "$WORK_DIR/.git" | head -n1)"
+    # Almost every gitdir path is absolute. Resolve a relative path against
+    # $WORK_DIR.
+    [[ -n "$GIT_DIR" && "$GIT_DIR" != /* ]] && GIT_DIR="$WORK_DIR/$GIT_DIR"
+    GIT_DIR="$(readlink -f "$GIT_DIR" 2>/dev/null || true)"
+
+    if [[ -n "$GIT_DIR" && -d "$GIT_DIR" ]]; then
+        # Resolve the shared common directory. The commondir file usually holds
+        # a relative path, such as ../..
+        if [[ -f "$GIT_DIR/commondir" ]]; then
+            COMMON_DIR="$(< "$GIT_DIR/commondir")"
+            [[ "$COMMON_DIR" != /* ]] && COMMON_DIR="$GIT_DIR/$COMMON_DIR"
+            COMMON_DIR="$(readlink -f "$COMMON_DIR")"
+        else
+            COMMON_DIR="$GIT_DIR"
+        fi
+
+        # Bind the shared common directory read-write.
+        args+=(--bind "$COMMON_DIR" "$COMMON_DIR")
+        # Hide the gitdir of every worktree, the siblings included.
+        [[ -d "$COMMON_DIR/worktrees" ]] && args+=(--tmpfs "$COMMON_DIR/worktrees")
+        # Bind this worktree's own gitdir again.
+        args+=(--bind "$GIT_DIR" "$GIT_DIR")
+    fi
+fi
+
+# --- Environment ---
+args+=(
+    --setenv HOME "$CLAUDE_DIR"
+    --setenv PATH "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/run/current-system/sw/bin:$(readlink -f "$HOME/.nix-profile/bin"):$CLAUDE_DIR"
+    --setenv TERM "${TERM:-xterm-256color}"
+)
+
+# Pass an API key environment variable through, if the host sets it.
+for var in ANTHROPIC_API_KEY CLAUDE_API_KEY; do
+    [[ -n "${!var:-}" ]] && args+=(--setenv "$var" "${!var}")
+done
+
+exec bwrap "${args[@]}" "$CLAUDE_BIN" "$@"
