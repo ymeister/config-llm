@@ -5,6 +5,7 @@
 - Write the `asd-ste100` before/after table only when the task is to rewrite text.
 - Simplify the wording. Never simplify the content. Keep every fact, name, number, link, and file path. If a shorter wording drops a number, a condition, or a scope qualifier, keep the longer wording. Say why you kept it.
 - Never use em-dashes in any output.
+- Prefer a bulleted list over a prose paragraph when text states two or more parallel facts or cases. Write a lead-in line that ends with a colon, then one `-` bullet per item.
 - Flag a request or an edit that conflicts with a convention here. Name the convention. Name the exact conflict in one or two sentences. Then do the request as given. An explicit instruction overrides these conventions. The flag makes the exception deliberate. The flag does not reopen the decision.
 
 <important if="the user gives the same correction more than once, states a preference in passing, or the work shows a convention here to be wrong, ambiguous, or incomplete">
@@ -24,6 +25,8 @@ Propose an update to this file. Give the exact wording and its placement. Wait f
 
 <important if="the user asks a question while you carry out approved work">
 Treat a question asked during implementation as a request for information only. Answer it exactly. Then continue the approved work. Do not read the question as a request to change course. Do not read it as a request to reopen the design.
+
+Answer a "why" about a specific edit with evidence from that edit: quote the exact text on both sides and show how they relate. Do not answer with a policy or a rule name. Make no further edits until the question is answered.
 </important>
 
 <important if="you write new code, add a definition, or move code within a file">
@@ -31,6 +34,7 @@ Treat a question asked during implementation as a request for information only. 
 - Group definitions of the same kind together. Do not put each definition next to the code that uses it.
 - Order definitions from top to bottom. If A uses B in its definition, put A above B. This rule applies to types and to functions. Put all types above all functions, so a file starts with its types.
 - Name a rule, a condition, or a repeated expression once, then use that name. Do not write it inline at each use. Give each level of a nested call chain its own binding. For a process invocation, the levels are the read, the spec, and the argv. If one level recurs at several call sites with identical arguments, make it one shared binding. Do not write one wrapper for each caller.
+- Build a result as a chain of short self-descriptive bindings. In a `let` chain, order them dependency-first: each binding uses only the ones above it, and the final expression comes last. In a `where` chain, order them top-down: the result comes first, and each binding sits above the bindings it uses.
 - Put constants at the bottom of their section, or at the end of the file. Never put them at the top.
 - Give every top-level definition its own type or signature declaration. This rule applies inside a group also.
 - Break a large block of local helpers into named top-level definitions. A Haskell `where` block and a nested closure are two examples. Make the code readable, not compact.
@@ -40,7 +44,9 @@ Treat a question asked during implementation as a request for information only. 
 
 <important if="you write a code comment, a doc comment, or a test name">
 
+- Self-descriptive code is better than a comment. Put the content into a name where you can. Keep the comments that remain compact and on point.
 - Write comments and test names that describe the code on their own. Do not use plan-phase labels such as "Layer 1" or "Phase 3a". Do not use ticket numbers. Do not use cross-references to other code, such as "mirrors X", "same pattern as Y", or "see also file.ts:42". All three rot, and nothing reports it, because nothing checks that a comment is correct. Describe the structure and the reason instead. If two pieces of code share a pattern, record the pattern in a shared abstraction, not in prose. Put ticket prefixes in commit subjects only.
+- Write ordered facts (a precedence, a fallback chain, a priority ladder) as a numbered list. The order is part of the content.
 - Show inputs and outputs by example in a doc comment, when the signature alone does not make the shape clear. For a file or a function, write an `Example:` line, then the call, then `=>`, then the result. Write one case for each shape the reader must know about. Include the empty case and the absent case. For a type, show one real value. If the value is large, mark each part with the field or the argument it came from. The example then also maps the parts to the fields. Use real values, not placeholders. Remove only text that is noise, such as a hash or a store path.
 </important>
 
