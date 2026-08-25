@@ -42,9 +42,11 @@ Answer a "why" about a specific edit with evidence from that edit: quote the exa
 - Mark each section with a comment header. The header has three lines: a full-width dash line, `-- Section name` in the language's comment syntax, and another dash line. Put one blank line above the header and one blank line below it. If the file already uses a dash-line width, use that same width.
 </important>
 
-<important if="you write a code comment, a doc comment, or a test name">
+<important if="you write a code comment, a doc comment, an option or field description, or a test name">
 
-- Self-descriptive code is better than a comment. Put the content into a name where you can. Keep the comments that remain compact and on point.
+- Self-descriptive code is better than a comment. Put the content into a name where you can.
+- Keep a comment or a description small. Aim for three lines or fewer of prose, and shorter than the code it sits above. Go past that only for a fact the code cannot show, and name that fact. An `Example:` block does not count toward the limit.
+- Cut a sentence that changes nothing for the reader. A caveat with no effect on behaviour is noise, even when it is true. So is a sentence that restates a name.
 - Write comments and test names that describe the code on their own. Do not use plan-phase labels such as "Layer 1" or "Phase 3a". Do not use ticket numbers. Do not use cross-references to other code, such as "mirrors X", "same pattern as Y", or "see also file.ts:42". All three rot, and nothing reports it, because nothing checks that a comment is correct. Describe the structure and the reason instead. If two pieces of code share a pattern, record the pattern in a shared abstraction, not in prose. Put ticket prefixes in commit subjects only.
 - Write ordered facts (a precedence, a fallback chain, a priority ladder) as a numbered list. The order is part of the content.
 - Show inputs and outputs by example in a doc comment, when the signature alone does not make the shape clear. For a file or a function, write an `Example:` line, then the call, then `=>`, then the result. Write one case for each shape the reader must know about. Include the empty case and the absent case. For a type, show one real value. If the value is large, mark each part with the field or the argument it came from. The example then also maps the parts to the fields. Use real values, not placeholders. Remove only text that is noise, such as a hash or a store path.
