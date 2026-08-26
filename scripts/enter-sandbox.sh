@@ -48,30 +48,31 @@ fi
 WORK_DIR="$(readlink -f .)"
 UID_NUM="$(id -u)"
 
-# The box's home is a tmpfs at the same path as the native home, so the native
-# home never reaches the box. Two entries then land on that tmpfs, if the search
-# below finds them: the .claude directory and the .claude.json file. A host
-# layout keeps them under any one of three roots, so the search reads each root
-# in turn and takes the first one that holds the entry. The box sees the same
-# layout whatever the host has, because the destination path is always the same.
-HOME_INSIDE="$HOME"
-
-# first_root <test> <entry> => the first "<root>/<entry>" that passes <test>
-# Example: first_root -d .claude      => /home/me/.local/share/Claude/.claude
-# Example: first_root -f .claude.json => /home/me/.claude.json
-# Example: first_root -d .absent      => "", and exit status 1
-first_root() {
-  local test="$1" entry="$2" root
-  for root in "${HOME_ROOTS[@]}"; do
-    [ -z "$root" ] && continue
-    [ "$test" "$root/$entry" ] && printf '%s\n' "$root/$entry" && return 0
+# The native home is never mounted, so the box reaches two of its entries and
+# nothing else: a read-write bind of .claude, and a copy of .claude.json. The
+# search below finds the Claude directory that holds those two. A host layout
+# keeps that directory under any one of three roots, so the search reads each
+# root in turn and takes the first root that holds a .claude directory. The other
+# entries of the Claude directory stay outside the box: .cache, .config, .local,
+# and .npm.
+# The box's home is a tmpfs, and no host directory sits at its path. A write to
+# the home therefore reaches no host path, whatever name it uses, and it dies
+# with the box. Only .claude persists.
+# claude_home => the first root that holds a .claude directory
+# Example: claude_home => /home/me/.local/share/Claude
+# Example: claude_home => "", and exit status 1
+claude_home() {
+  local root
+  for root in "${CLAUDE_DIR:-}" "$HOME/.local/share/Claude" "$HOME"; do
+    [ -n "$root" ] && [ -d "$root/.claude" ] && printf '%s\n' "$root" && return 0
   done
   return 1
 }
 
-HOME_ROOTS=("${CLAUDE_DIR:-}" "$HOME/.local/share/Claude" "$HOME")
-CLAUDE_DATA="$(first_root -d .claude || true)"
-CLAUDE_STATE="$(first_root -f .claude.json || true)"
+CLAUDE_HOME="$(claude_home || true)"
+CLAUDE_DATA="${CLAUDE_HOME:+$CLAUDE_HOME/.claude}"
+CLAUDE_STATE="${CLAUDE_HOME:+$CLAUDE_HOME/.claude.json}"
+HOME_INSIDE=/home/box
 
 # The scratch directory holds the artifacts that only the sandbox uses: the
 # podman config, the wrappers, and podman's storage. git ignores the directory,
@@ -273,13 +274,14 @@ args+=(--dir "/run/user/$UID_NUM")
 
 # --- Writable mounts: the box's home and the project (only) ---
 # The tmpfs comes first, so the two entries below land on top of it. The .claude
-# directory is a read-write bind. The .claude.json file is a copy: bwrap reads
-# the host file through file descriptor 9 and writes a real file on the tmpfs. A
-# save that replaces the file by rename then works. The host file cannot change,
-# and the box loses every write to the copy at exit.
+# directory is a read-write bind, and it is the one path that reaches the host
+# Claude directory. The .claude.json file is a copy: bwrap reads the host file
+# through file descriptor 9 and writes a real file on the tmpfs. A save that
+# replaces the file by rename then works. The host file cannot change, and the
+# box loses every write to the copy at exit.
 args+=(--tmpfs "$HOME_INSIDE")
 [ -n "$CLAUDE_DATA" ] && args+=(--bind "$CLAUDE_DATA" "$HOME_INSIDE/.claude")
-if [ -n "$CLAUDE_STATE" ]; then
+if [ -n "$CLAUDE_STATE" ] && [ -f "$CLAUDE_STATE" ]; then
   exec 9<"$CLAUDE_STATE"
   args+=(--perms 0600 --file 9 "$HOME_INSIDE/.claude.json")
 fi
