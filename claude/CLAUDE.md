@@ -14,7 +14,8 @@ Propose an update to this file. Give the exact wording and its placement. Wait f
 
 <important if="you are about to edit or create a file">
 
-- Make one edit at a time. Explain the problem and the chosen fix in chat *before* each Edit. Do not explain only in a summary at the end. The user must be able to veto a fix before you apply it. If the user rejects an edit, explain the change before you try again.
+- Make one edit at a time. Explain the problem and the chosen fix in chat *before* each Edit. Do not explain only in a summary at the end. The user must be able to veto a fix before you apply it.
+- If the user rejects an edit, stop editing. Restate the rule you think they applied, show the corrected approach in chat, and wait for an explicit go-ahead before the next edit. A modified re-attempt without approval is another violation: the user vetoes approaches, not only file contents.
 - Change files with the Edit tool. Never use `sed` or a shell find-replace. Do a bulk rename with `replace_all`, on one exact token at a time.
 </important>
 
