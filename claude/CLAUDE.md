@@ -41,6 +41,9 @@ Answer a "why" about a specific edit with evidence from that edit: quote the exa
 - Break a large block of local helpers into named top-level definitions. A Haskell `where` block and a nested closure are two examples. Make the code readable, not compact.
 - Put every branch of a case, a switch, or a pattern match on its own line. This rule applies to a small two-branch predicate also. Do not write brace-and-semicolon one-liners.
 - Mark each section with a comment header. The header has three lines: a full-width dash line, `-- Section name` in the language's comment syntax, and another dash line. Put one blank line above the header and one blank line below it. If the file already uses a dash-line width, use that same width.
+- Write a run of adjacent bindings under one binding keyword: one `let` for the run, not one `let` per binding.
+- Separate a function body's logical blocks with one blank line. A Haskell `do` block follows this rule also.
+- Pass a multi-line function argument last, and pick the variant of the combinator that takes it last: `for` over `traverse`, `forM` over `mapM`. With a named function, keep the plain variant.
 </important>
 
 <important if="you write a code comment, a doc comment, an option or field description, or a test name">
