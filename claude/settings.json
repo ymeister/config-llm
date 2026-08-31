@@ -9,6 +9,7 @@
   "permissions": {
     "defaultMode": "default"
   },
+  "model": "claude-fable-5[1m]",
   "skillOverrides": {
     "asd-ste100": "name-only"
   },
@@ -32,5 +33,6 @@
   "verbose": true,
   "preferredNotifChannel": "notifications_disabled",
   "autoCompactEnabled": false,
-  "remoteControlAtStartup": false
+  "remoteControlAtStartup": false,
+  "feedbackDrafts": "off"
 }
