@@ -35,6 +35,8 @@ Answer a "why" about a specific edit with evidence from that edit: quote the exa
 - Group definitions of the same kind together. Do not put each definition next to the code that uses it.
 - Order definitions from top to bottom. If A uses B in its definition, put A above B. This rule applies to types and to functions. Put all types above all functions, so a file starts with its types.
 - Name a rule, a condition, or a repeated expression once, then use that name. Do not write it inline at each use. Give each level of a nested call chain its own binding. For a process invocation, the levels are the read, the spec, and the argv. If one level recurs at several call sites with identical arguments, make it one shared binding.
+- Prefer a standard-library function to a hand-written equivalent. `lookup k xs` replaces `fmap snd (find ((== k) . fst) xs)`.
+- Before you add a helper, search for one that already exists. Search also for open-coded copies of it elsewhere, and make them call it.
 - Build a result as a chain of short self-descriptive bindings. In a `let` chain, order them dependency-first: each binding uses only the ones above it, and the final expression comes last. In a `where` chain, order them top-down: the result comes first, and each binding sits above the bindings it uses.
 - Put constants at the bottom of their section, or at the end of the file. Never put them at the top.
 - Give every top-level definition its own type or signature declaration. This rule applies inside a group also.
@@ -70,7 +72,30 @@ Answer a "why" about a specific edit with evidence from that edit: quote the exa
 
 - **Do not put a `_` prefix on a record field.** Use plain names with `OverloadedRecordDot` and `DuplicateRecordFields`. Read a field as `value.field`.
 - **Write post-qualified imports:** `import Data.Map qualified as Map`.
+- **Write a multiline export or import list** when it holds more than one name: leading commas, two-space indent, one name per line.
+- **Write a multiline type signature.** Put `::`, `=>`, and each `->` at the start of its own line. Write two or more constraints as one leading-comma tuple:
+
+  ```haskell
+  lookupRow
+    :: ( Eq a
+       , Show b
+       )
+    => a
+    -> b
+    -> IO Row
+  ```
+- **Give every binding a type, not only the top-level ones.** A `let` binding puts the signature on its own line. A `do` binding puts it between the name and the arrow:
+
+  ```haskell
+  let limit :: Int
+      limit = 100
+
+  rows
+    :: [Row]
+    <- query connection limit
+  ```
 - **Use `MultilineStrings`** for a literal block. Do not use the `here` or `i` quasiquoters.
 - **Put each instance directly after its type.** Do not put instances in a separate section.
+- **Prefer a function over a list to a chain of binary operators.** Write `and [ .. ]` and `or [ .. ]`, not `&&` and `||`. Write `fold` or `mconcat`, not a chain of `<>`.
 - **Use generic combinators, not specialised ones.** Use `fmap`, `foldMap`, `fold`, and `toList` instead of `Map.map` and `concatMap . Map.toList`. Use `Map.restrictKeys` instead of `Map.filterWithKey` against a set.
 </important>

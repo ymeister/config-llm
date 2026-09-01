@@ -9,7 +9,6 @@
   "permissions": {
     "defaultMode": "default"
   },
-  "model": "claude-fable-5[1m]",
   "skillOverrides": {
     "asd-ste100": "name-only"
   },
@@ -28,11 +27,16 @@
   "enabledPlugins": {
     "linear@claude-plugins-official": true
   },
+  "feedbackDrafts": "off",
   "effortLevel": "xhigh",
   "tui": "fullscreen",
   "verbose": true,
   "preferredNotifChannel": "notifications_disabled",
   "autoCompactEnabled": false,
   "remoteControlAtStartup": false,
-  "feedbackDrafts": "off"
+  "modelSettings": {
+    "claude-opus-5": {
+      "effortLevel": "xhigh"
+    }
+  }
 }
