@@ -72,7 +72,7 @@ Answer a "why" about a specific edit with evidence from that edit: quote the exa
 
 - **Do not put a `_` prefix on a record field.** Use plain names with `OverloadedRecordDot` and `DuplicateRecordFields`. Read a field as `value.field`.
 - **Write post-qualified imports:** `import Data.Map qualified as Map`.
-- **Write a multiline export or import list** when it holds more than one name: leading commas, two-space indent, one name per line.
+- **Write a multiline export or import list when it does not fit on one line:** leading commas, two-space indent, one name per line. A short list stays inline.
 - **Write a multiline type signature.** Put `::`, `=>`, and each `->` at the start of its own line. Write two or more constraints as one leading-comma tuple:
 
   ```haskell
