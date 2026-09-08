@@ -104,5 +104,7 @@ Answer a "why" about a specific edit with evidence from that edit: quote the exa
 - **Use `MultilineStrings`** for a literal block. Do not use the `here` or `i` quasiquoters.
 - **Put each instance directly after its type.** Do not put instances in a separate section.
 - **Prefer a function over a list to a chain of binary operators.** Write `and [ .. ]` and `or [ .. ]`, not `&&` and `||`. Write `fold` or `mconcat`, not a chain of `<>`.
+- **Use `$` over parentheses around a function's last argument:** `f $ g x`, not `f (g x)`. Parentheses stay when the wrapped expression is not the last argument.
+- **Use `(^.)` over `view`.**
 - **Use generic combinators, not specialised ones.** Use `fmap`, `foldMap`, `fold`, and `toList` instead of `Map.map` and `concatMap . Map.toList`. Use `Map.restrictKeys` instead of `Map.filterWithKey` against a set.
 </important>
