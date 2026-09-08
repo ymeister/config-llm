@@ -24,6 +24,13 @@ Propose an update to this file. Give the exact wording and its placement. Wait f
 - Stage explicit paths with `git add <path>`. Never use `git add -A`.
 </important>
 
+<important if="you need a nix store path or the source of a nix dependency">
+
+- Never scan `/nix/store` with glob, `ls`, `find`, or `grep`. Store scans are slow, and a name match does not prove the path belongs to the current pin.
+- Resolve the path by evaluating the repo's own nix expression, for example `nix-build -E '(import ./thunks.nix).<dep>' --no-out-link` or `nix-instantiate --eval`.
+- If the evaluation needs host access the session lacks, such as ssh keys or network, paste the exact command for the user to run, then read the path they return.
+</important>
+
 <important if="the user asks a question while you carry out approved work">
 Treat a question asked during implementation as a request for information only. Answer it exactly. Then continue the approved work. Do not read the question as a request to change course. Do not read it as a request to reopen the design.
 
