@@ -1,0 +1,1 @@
+../../third_party/cursor/plugins/pstack/skills/unslop/SKILL.md
