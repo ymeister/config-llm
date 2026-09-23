@@ -9,7 +9,7 @@
   "permissions": {
     "defaultMode": "default"
   },
-  "model": "claude-fable-5[1m]",
+  "model": "fable[1m]",
   "skillOverrides": {
     "asd-ste100": "name-only"
   },
