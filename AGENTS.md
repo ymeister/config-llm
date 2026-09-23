@@ -69,17 +69,6 @@ Apply when you write a code comment, a doc comment, an option or field descripti
 - Write two or more parallel items in a comment as a bulleted list too: a lead-in line that ends with a colon, then one `-` bullet per item, in the language's comment syntax. A sentence that joins the items with commas and "and" is the prose form this rule replaces.
 - Show inputs and outputs by example in a doc comment, when the signature alone does not make the shape clear. For a file or a function, write an `Example:` line, then the call, then `=>`, then the result. Write one case for each shape the reader must know about. Include the empty case and the absent case. For a type, show one real value. If the value is large, mark each part with the field or the argument it came from. The example then also maps the parts to the fields. Use real values, not placeholders. Remove only text that is noise, such as a hash or a store path.
 
-## Narrative writing
-
-Apply when you write fiction, narrative prose, or dialogue. Avoid these AI-isms:
-
-- A smell described through an abstract metaphor. Do not filter every sensory detail through a metaphor. Give a smell a real physical source. You cannot smell a person's personality.
-  Bad: "It smells like something very small that thinks very highly of itself."
-- A character who "felt something" they cannot name or explain, followed by a stock simile. Do not use this line as filler when no metaphor comes to mind. Name the feeling, or show it through an action.
-  Bad: "She felt something but she couldn't explain what that feeling was. It settled into her stomach like a knot she couldn't untie."
-- A careless medial dialogue tag. A medial tag sits between two spoken sentences and adds a natural pause. Use it sparingly, and only when the scene needs the pause: to add movement, to build suspense or tension, or to mark the next sentence spoken. Overuse makes the writing feel subdued and slow, with weird pacing. Default to a tag before or after the whole quote.
-  Example of a medial tag: "You know where it is, and you are Madhavi's son," the man said. "A healer learns the hidden outskirts of a village better than anyone else."
-
 ## Types and signatures
 
 Apply when you define a type, a function signature, or a parameter.
@@ -125,3 +114,14 @@ Apply when you write or edit Haskell, even when the code around it differs from 
 - **Use `$` over parentheses around a function's last argument:** `f $ g x`, not `f (g x)`. Parentheses stay when the wrapped expression is not the last argument.
 - **Use `(^.)` over `view`.**
 - **Use generic combinators, not specialised ones.** Use `fmap`, `foldMap`, `fold`, and `toList` instead of `Map.map` and `concatMap . Map.toList`. Use `Map.restrictKeys` instead of `Map.filterWithKey` against a set.
+
+## Narrative writing
+
+Apply when you write fiction, narrative prose, or dialogue. Avoid these AI-isms:
+
+- A smell described through an abstract metaphor. Do not filter every sensory detail through a metaphor. Give a smell a real physical source. You cannot smell a person's personality.
+  Bad: "It smells like something very small that thinks very highly of itself."
+- A character who "felt something" they cannot name or explain, followed by a stock simile. Do not use this line as filler when no metaphor comes to mind. Name the feeling, or show it through an action.
+  Bad: "She felt something but she couldn't explain what that feeling was. It settled into her stomach like a knot she couldn't untie."
+- A careless medial dialogue tag. A medial tag sits between two spoken sentences and adds a natural pause. Use it sparingly, and only when the scene needs the pause: to add movement, to build suspense or tension, or to mark the next sentence spoken. Overuse makes the writing feel subdued and slow, with weird pacing. Default to a tag before or after the whole quote.
+  Example of a medial tag: "You know where it is, and you are Madhavi's son," the man said. "A healer learns the hidden outskirts of a village better than anyone else."
