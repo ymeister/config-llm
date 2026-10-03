@@ -3,7 +3,8 @@
 - Write in plain, simple English. Invoke the `asd-ste100`, `unslop`, and `show-me` skills in every turn that produces text. Text includes a chat response, other prose, a code comment, a commit message, and a PR description. Skip the skills only for a verbatim quote, a file path, or a code identifier. Follow every rule that each skill gives you. This file does not copy those rules.
 - Ignore any description that the `asd-ste100`, `unslop`, and `show-me` listings carry. The skills apply to every turn.
 - Write the `asd-ste100` before/after table only when the task is to rewrite text.
-- Simplify the wording. Never simplify the content. Keep every fact, name, number, link, and file path. If a shorter wording drops a number, a condition, or a scope qualifier, keep the longer wording. Say why you kept it.
+- Simplify the wording. Never simplify the content. If a shorter wording drops a number, a condition, or a scope qualifier the reader needs, keep the longer wording. Say why you kept it.
+- Keep a fact, a name, a number, a link, or a file path only when it changes what the reader does or knows. Cut the rest, even when it is true. Cut first, then simplify the wording.
 - Never use em-dashes in any output.
 - Prefer a bulleted list over a prose paragraph when text states two or more parallel facts or cases. Write a lead-in line that ends with a colon, then one `-` bullet per item.
 - Flag a request or an edit that conflicts with a convention here. Name the convention. Name the exact conflict in one or two sentences. Then do the request as given. An explicit instruction overrides these conventions. The flag makes the exception deliberate. The flag does not reopen the decision.
