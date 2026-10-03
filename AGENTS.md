@@ -88,7 +88,7 @@ Apply when you write or edit Haskell, even when the code around it differs from 
 - **Do not put a `_` prefix on a record field.** Use plain names with `OverloadedRecordDot` and `DuplicateRecordFields`. Read a field as `value.field`.
 - **Write post-qualified imports:** `import Data.Map qualified as Map`.
 - **Write a multiline export or import list when it does not fit on one line:** leading commas, two-space indent, one name per line. A short list stays inline.
-- **Write a multiline type signature.** Put `::`, `=>`, and each `->` at the start of its own line. Write two or more constraints as one leading-comma tuple:
+- **Write a multiline type signature when it does not fit on one line.** A signature that fits on one line stays on one line. In the multiline form put `::`, `=>`, and each `->` at the start of its own line, and write two or more constraints as one leading-comma tuple:
 
   ```haskell
   lookupRow
