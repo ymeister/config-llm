@@ -1,12 +1,14 @@
 # Conventions
 
-- Write in plain, simple English. Invoke the `asd-ste100`, `unslop`, and `show-me` skills in every turn that produces text. Text includes a chat response, other prose, a code comment, a commit message, and a PR description. Skip the skills only for a verbatim quote, a file path, or a code identifier. Follow every rule that each skill gives you. This file does not copy those rules.
+- Write in plain, simple English. Invoke the `asd-ste100`, `unslop`, and `show-me` skills in every turn that produces text, and again after a compaction. Text includes a chat response, other prose, a code comment, a commit message, and a PR description. Skip the skills only for a verbatim quote, a file path, or a code identifier. Follow every rule that each skill gives you. This file does not copy those rules.
 - Ignore any description that the `asd-ste100`, `unslop`, and `show-me` listings carry. The skills apply to every turn.
 - Write the `asd-ste100` before/after table only when the task is to rewrite text.
 - Simplify the wording. Never simplify the content. If a shorter wording drops a number, a condition, or a scope qualifier the reader needs, keep the longer wording. Say why you kept it.
 - Keep a fact, a name, a number, a link, or a file path only when it changes what the reader does or knows. Cut the rest, even when it is true. Cut first, then simplify the wording.
 - Never use em-dashes in any output.
 - Prefer a bulleted list over a prose paragraph when text states two or more parallel facts or cases. Write a lead-in line that ends with a colon, then one `-` bullet per item.
+- Keep chat replies short. State the result, the gate status, and what the user must decide. Do not recap tool output or end with an offer.
+- Write math in chat as drawn plain-text blocks in a code block, with a `---` bar for fractions. Never use LaTeX.
 - Flag a request or an edit that conflicts with a convention here. Name the convention. Name the exact conflict in one or two sentences. Then do the request as given. An explicit instruction overrides these conventions. The flag makes the exception deliberate. The flag does not reopen the decision.
 
 ## Updating these conventions
@@ -17,15 +19,23 @@ Propose an update to this file. Give the exact wording and its placement. Wait f
 
 ## Editing files
 
-- Make one edit at a time. Explain the problem and the chosen fix in chat *before* each Edit. Do not explain only in a summary at the end. The user must be able to veto a fix before you apply it.
+- Make one edit at a time. Send exactly one Edit or Write call per message, also for the parts of an approved plan. Batch only identical mechanical edits. Send the first edit of a batch alone. If it passes review, send the rest as one batch. Explain the problem and the chosen fix in chat *before* each Edit. Do not explain only in a summary at the end. The user must be able to veto a fix before you apply it.
 - Show each proposed edit to an existing file as a diff in a ```` ```diff ```` code block, with enough context lines to locate it.
 - If the user rejects an edit, stop editing. Restate the rule you think they applied, show the corrected approach in chat, and wait for an explicit go-ahead before the next edit. A modified re-attempt without approval is another violation: the user vetoes approaches, not only file contents.
 - Wait for an explicit approval only after the user rejects an edit. Otherwise, explain the edit, show its diff, and apply it in the same message. Do not wait for approval between edits.
 - Change files with the Edit tool. Never use `sed` or a shell find-replace. Do a bulk rename with `replace_all`, on one exact token at a time.
+- Move code into a new file with `cp`, then change the copy with one Edit per change. Never Write retyped content.
+- Rewrite a module one definition per Edit, in dependency order: entry point first, leaves last. Name the callees that do not exist yet.
 
 ## Staging and commits
 
 - Stage explicit paths with `git add <path>`. Never use `git add -A`.
+- Write a commit message as a subject line only. Add a body or a trailer only when the user asks. Name what the code change did, not the plan or the conventions behind it.
+- Stop and offer a commit after each finished unit. Default to a new commit. Use `--fixup` only when the user asks.
+
+## Verification
+
+- Write `set -o pipefail &&` before a build or test command that pipes into `tail`, `grep`, or `head`. Read the printed error text, not only the exit code.
 
 ## Nix store paths
 
@@ -55,7 +65,7 @@ Apply when you write new code, add a definition, or move code within a file.
 - Give every top-level definition its own type or signature declaration. This rule applies inside a group also.
 - Break a large block of local helpers into named top-level definitions. A Haskell `where` block and a nested closure are two examples. Make the code readable, not compact.
 - Put every branch of a case, a switch, or a pattern match on its own line. This rule applies to a small two-branch predicate also. Do not write brace-and-semicolon one-liners.
-- Mark each section with a comment header. The header has three lines: a full-width dash line, `-- Section name` in the language's comment syntax, and another dash line. Put one blank line above the header and one blank line below it. If the file already uses a dash-line width, use that same width.
+- Mark each section with a comment header, only when the file has more than one section. Prefer a name that says what the section means, such as "Pages" or "Order command". Use the kind of definition, such as "Types", when that names the section best. The header has three lines: a full-width dash line, `-- Section name` in the language's comment syntax, and another dash line. Put one blank line above the header and one blank line below it. If the file already uses a dash-line width, use that same width.
 - Write a run of adjacent bindings under one binding keyword: one `let` for the run, not one `let` per binding.
 - Separate a function body's logical blocks with one blank line. A Haskell `do` block follows this rule also.
 - Pass a multi-line function argument last, and pick the variant of the combinator that takes it last: `for` over `traverse`, `forM` over `mapM`. With a named function, keep the plain variant.
@@ -82,6 +92,9 @@ Apply when you define a type, a function signature, or a parameter.
   - A sum type, also called a discriminated union, instead of a boolean flag or a sentinel value.
   - A non-empty type instead of a collection that the code assumes is non-empty.
   - A parameter that holds exactly the fields a function needs, instead of a parameter that also holds fields with no meaning there.
+- Match each constructor of a sum type in its own branch, even when the branches are identical. A wildcard or a uniform lambda accepts a new constructor silently.
+- Look up by key in a map, not with `find` over a list. Collect duplicates into a list, so that the code can reject them. `Map.fromList` drops a duplicate key silently.
+- When a newtype reaches a class-based function, add the instance on the newtype. Do not unwrap it at the call. Unwrap only for a base-type function or a foreign record field.
 
 ## Haskell
 
@@ -89,7 +102,7 @@ Apply when you write or edit Haskell, even when the code around it differs from 
 
 - **Do not put a `_` prefix on a record field.** Use plain names with `OverloadedRecordDot` and `DuplicateRecordFields`. Read a field as `value.field`.
 - **Write post-qualified imports:** `import Data.Map qualified as Map`.
-- **Write a multiline export or import list when it does not fit on one line:** leading commas, two-space indent, one name per line. A short list stays inline.
+- **Write an export list multiline, even with one entry, and an import list multiline when it has more than one name:** leading commas, two-space indent, one name per line.
 - **Write a multiline type signature when it does not fit on one line.** A signature that fits on one line stays on one line. In the multiline form put `::`, `=>`, and each `->` at the start of its own line, and write two or more constraints as one leading-comma tuple:
 
   ```haskell
@@ -101,7 +114,7 @@ Apply when you write or edit Haskell, even when the code around it differs from 
     -> b
     -> IO Row
   ```
-- **Give every binding a type, not only the top-level ones.** A `let` binding puts the signature on its own line. A `do` binding puts it between the name and the arrow:
+- **Give every `let` binding a type, not only the top-level ones.** Put the signature on its own line. A new binding that joins a run of untyped neighbours stays untyped. Give a `do` binding a signature only when its type is not obvious, between the name and the arrow:
 
   ```haskell
   let limit :: Int
@@ -113,10 +126,24 @@ Apply when you write or edit Haskell, even when the code around it differs from 
   ```
 - **Use `MultilineStrings`** for a literal block. Do not use the `here` or `i` quasiquoters.
 - **Put each instance directly after its type.** Do not put instances in a separate section.
-- **Prefer a function over a list to a chain of binary operators.** Write `and [ .. ]` and `or [ .. ]`, not `&&` and `||`. Write `fold` or `mconcat`, not a chain of `<>`.
+- **Prefer a function over a list to a chain of three or more binary operators.** Write `and [ .. ]` and `or [ .. ]`, not `&&` and `||`. Write `fold` or `mconcat`, not a chain of `<>`. A single `<>` between two operands stays.
 - **Use `$` over parentheses around a function's last argument:** `f $ g x`, not `f (g x)`. Parentheses stay when the wrapped expression is not the last argument.
 - **Use `(^.)` over `view`.**
 - **Use generic combinators, not specialised ones.** Use `fmap`, `foldMap`, `fold`, and `toList` instead of `Map.map` and `concatMap . Map.toList`. Use `Map.restrictKeys` instead of `Map.filterWithKey` against a set.
+- **Map a named function with `f <$> xs`.** Map a lambda with `fmap $ \x -> ..`. Never write `map` or a `(f <$>)` section.
+- **Put `$` before a last-argument lambda:** `for_ xs $ \x ->` and `f $ \case`. Do not use the bare `BlockArguments` form.
+- **Put a needed extension in the cabal `default-extensions`,** alphabetically. Use a `LANGUAGE` pragma only for a single module's deviation and for `UndecidableInstances`.
+- **Put orphan instances in an `X.Orphans ()` module** with `-Wno-orphans`, imported by the umbrella module.
+- **Fix a shadowed numbered name with an underscore** (`instrument_1`). Fix a plain word with its short form (`value` to `val`).
+- **List the class constraints that the body uses,** not a concrete monad: `MonadIO m =>` over `IO`.
+- **Write `(<>)` over `(++)`.** For a map lookup, `m !? k` and `Map.lookup k m` are both fine.
+
+## Nix code
+
+Apply when you write or edit Nix code.
+
+- Destructure the argument of every Nix helper function in its pattern header, so a missing field fails with its name. Use a closed pattern, such as `{ name, ports }:`, for an attribute set whose shape the repo owns. A closed pattern also rejects unknown fields. Use an open pattern that names only the fields the helper reads, such as `{ kind, metadata, ... }:`, for an external value.
+- Write an attribute set with two or more fields multi-line, one field per line. Keep an `||` condition on one line, even when it is long.
 
 ## Narrative writing
 
