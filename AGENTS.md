@@ -114,6 +114,16 @@ Apply when you write or edit Haskell, even when the code around it differs from 
     -> b
     -> IO Row
   ```
+- **Write a tuple multiline when it does not fit on one line.** A tuple that fits on one line stays on one line. In the multiline form put each element on its own line with a leading comma, the opening parenthesis before the first element, and the closing parenthesis on its own line:
+
+  ```haskell
+  (x, y, z)
+
+  ( longX
+  , longY
+  , longZ
+  )
+  ```
 - **Give every `let` binding a type, not only the top-level ones.** Put the signature on its own line. A new binding that joins a run of untyped neighbours stays untyped. Give a `do` binding a signature only when its type is not obvious, between the name and the arrow:
 
   ```haskell
