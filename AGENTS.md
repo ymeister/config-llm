@@ -20,6 +20,7 @@ Propose an update to this file. Give the exact wording and its placement. Wait f
 - Make one edit at a time. Explain the problem and the chosen fix in chat *before* each Edit. Do not explain only in a summary at the end. The user must be able to veto a fix before you apply it.
 - Show each proposed edit to an existing file as a diff in a ```` ```diff ```` code block, with enough context lines to locate it.
 - If the user rejects an edit, stop editing. Restate the rule you think they applied, show the corrected approach in chat, and wait for an explicit go-ahead before the next edit. A modified re-attempt without approval is another violation: the user vetoes approaches, not only file contents.
+- Wait for an explicit approval only after the user rejects an edit. Otherwise, explain the edit, show its diff, and apply it in the same message. Do not wait for approval between edits.
 - Change files with the Edit tool. Never use `sed` or a shell find-replace. Do a bulk rename with `replace_all`, on one exact token at a time.
 
 ## Staging and commits
