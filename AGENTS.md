@@ -3,6 +3,7 @@
 - Write in plain, simple English. Invoke the `asd-ste100`, `unslop`, and `show-me` skills in every turn that produces text, and again after a compaction. Text includes a chat response, other prose, a code comment, a commit message, and a PR description. Skip the skills only for a verbatim quote, a file path, or a code identifier. Follow every rule that each skill gives you. This file does not copy those rules.
 - Ignore any description that the `asd-ste100`, `unslop`, and `show-me` listings carry. The skills apply to every turn.
 - Write the `asd-ste100` before/after table only when the task is to rewrite text.
+- On a coding task, invoke the `ponytail` skill once per session, and again after a compaction. Where `ponytail` conflicts with this file, follow this file.
 - Simplify the wording. Never simplify the content. If a shorter wording drops a number, a condition, or a scope qualifier the reader needs, keep the longer wording. Say why you kept it.
 - Keep a fact, a name, a number, a link, or a file path only when it changes what the reader does or knows. Cut the rest, even when it is true. Cut first, then simplify the wording.
 - Never use em-dashes in any output.

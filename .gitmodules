@@ -7,3 +7,6 @@
 [submodule "humanlayer/skills"]
 	path = third_party/humanlayer/skills
 	url = https://github.com/humanlayer/skills.git
+[submodule "third_party/ponytail"]
+	path = third_party/ponytail
+	url = https://github.com/DietrichGebert/ponytail.git
