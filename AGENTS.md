@@ -146,6 +146,7 @@ Apply when you write or edit Haskell, even when the code around it differs from 
 - **Put a needed extension in the cabal `default-extensions`,** alphabetically. Use a `LANGUAGE` pragma only for a single module's deviation and for `UndecidableInstances`.
 - **Put orphan instances in an `X.Orphans ()` module** with `-Wno-orphans`, imported by the umbrella module.
 - **Fix a shadowed numbered name with an underscore** (`instrument_1`). Fix a plain word with its short form (`value` to `val`).
+- **Name a bound DOM element with the `El` suffix** (`buttonEl`).
 - **List the class constraints that the body uses,** not a concrete monad: `MonadIO m =>` over `IO`.
 - **Write `(<>)` over `(++)`.** For a map lookup, `m !? k` and `Map.lookup k m` are both fine.
 
