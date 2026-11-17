@@ -14,3 +14,6 @@
 	path = third_party/ponytail
 	url = https://github.com/DietrichGebert/ponytail.git
 	shallow = true
+[submodule "third_party/janestreet/agent_skills"]
+	path = third_party/janestreet/agent_skills
+	url = https://github.com/janestreet/agent_skills.git
